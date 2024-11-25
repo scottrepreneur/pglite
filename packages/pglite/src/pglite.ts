@@ -68,6 +68,8 @@ export class PGlite
   #notifyListeners = new Map<string, Set<(payload: string) => void>>()
   #globalNotifyListeners = new Set<(channel: string, payload: string) => void>()
 
+  #cma_port?: number = 0
+
   /**
    * Create a new PGlite instance
    * @param dataDir The directory to store the database files
@@ -187,7 +189,7 @@ export class PGlite
       `PREFIX=${WASM_PREFIX}`,
       `PGUSER=${options.username ?? 'postgres'}`,
       `PGDATABASE=${options.database ?? 'template1'}`,
-      'MODE=REACT',
+      // 'MODE=REACT',
       'REPL=N',
       // "-F", // Disable fsync (TODO: Only for in-memory mode?)
       ...(this.debug ? ['-d', this.debug.toString()] : []),
@@ -422,6 +424,8 @@ export class PGlite
       }
     }
 
+    // this.#cma_port = this.mod._pg_getport()
+
     // Sync any changes back to the persisted store (if there is one)
     // TODO: only sync here if initdb did init db.
     await this.syncToFs()
@@ -572,14 +576,15 @@ export class PGlite
     // set buffer size so answer will be at size+0x2 pointer addr
     mod._interactive_write(msg_len)
 
-    // copy whole buffer at addr 0x1
-    mod.HEAPU8.set(message, 1)
+    // copy whole buffer at cma addr
+    console.log('cma port', this.#cma_port)
+    mod.HEAPU8.set(message, this.#cma_port! + 1)
 
     // execute the message
     mod._interactive_one()
 
     // Read responses from the buffer
-    const msg_start = msg_len + 2
+    const msg_start = this.#cma_port! + msg_len + 2
     const msg_end = msg_start + mod._interactive_read()
     const data = mod.HEAPU8.subarray(msg_start, msg_end)
 
