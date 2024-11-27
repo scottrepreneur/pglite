@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       message:
-        description: 'Test docker running'
+        description: 'Build as described in README.md'
   push:
     branches:
       - 'tudor/feat-docker-action'
 
 jobs:
-  run_container:
+  readmemd_build:
     runs-on: ubuntu-latest
     services:
       docker:
@@ -19,7 +19,7 @@ jobs:
         ports:
           - 2375:2375
     container:
-      image: ubuntu:latest
+      image: node:20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,9 +27,12 @@ jobs:
       - name: Install Docker
         run: |
           apt-get update
-          apt-get install -y docker.io          
+          apt-get install -y docker.io git wget
 
-      - name: Test Docker
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Build all
         run: |
-          docker version
-          docker info 
+          pnpm install
+          pnpm build:all

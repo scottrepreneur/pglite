@@ -22,12 +22,12 @@ docker run \
   -e OBJDUMP=${OBJDUMP:-true} \
   -e SDK_ARCHIVE \
   -e WASI_SDK_ARCHIVE \
-  -v ./cibuild.sh:/workspace/cibuild.sh:rw \
-  -v ./.buildconfig:/workspace/.buildconfig:rw \
-  -v ./extra:/workspace/extra:rw \
-  -v ./cibuild:/workspace/cibuild:rw \
-  -v ./patches:/opt/patches:rw \
-  -v ./tests:/workspace/tests:rw \
-  -v ./packages/pglite:/workspace/packages/pglite:rw \
+  -v "/$(pwd)/cibuild.sh:/workspace/cibuild.sh:rw" \
+  -v "/$(pwd)/.buildconfig:/workspace/.buildconfig:rw" \
+  -v "/$(pwd)/extra:/workspace/extra:rw" \
+  -v "/$(pwd)/cibuild:/workspace/cibuild:rw" \
+  -v "/$(pwd)/patches:/opt/patches:rw" \
+  -v "/$(pwd)/tests:/workspace/tests:rw" \
+  -v "/$(pwd)/packages/pglite:/workspace/packages/pglite:rw" \
   $IMG_NAME:$IMG_TAG \
   bash ./cibuild/build-all.sh
