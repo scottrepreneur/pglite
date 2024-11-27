@@ -5,6 +5,9 @@ on:
     inputs:
       message:
         description: 'Test docker running'
+  push:
+    branches:
+      - 'tudor/feat-docker-action'
 
 jobs:
   run_container:
