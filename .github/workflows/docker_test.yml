@@ -7,7 +7,7 @@ on:
       - master
 
 jobs:
-  push_container:
+  run_container:
     runs-on: ubuntu-latest
     services:
       docker:
@@ -25,12 +25,6 @@ jobs:
         run: |
           apt-get update
           apt-get install -y docker.io          
-
-      - name: Test connection
-        run: |
-          apt-get update
-          apt-get install -y iputils-ping
-          ping -c 3 docker          
 
       - name: Test Docker
         run: |
