@@ -38,13 +38,13 @@ jobs:
         run: |
             rm -rf /wasm_out/*
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      # - name: Install pnpm
+      #   uses: pnpm/action-setup@v4
+      #   with:
+      #     version: 9
           
-      - name: Checkout
-        uses: actions/checkout@v4
+      # - name: Checkout
+      #   uses: actions/checkout@v4
 
       - name: Docker volume test
         env:
@@ -56,7 +56,7 @@ jobs:
       - name: Read output
         run: |
           ls /wasm_out
-          cat /data/test.txt
+          cat /wasm_out/test.txt
 
       # - name: Checkout
       #   run: |
