@@ -45,7 +45,7 @@ jobs:
 
       - name: Checkout
         run: |
-            git clone --single-branch tudor/feat-docker-action https://github.com/electric-sql/pglite.git /src
+            git clone --single-branch --branch tudor/feat-docker-action https://github.com/electric-sql/pglite.git /src
     #   - name: Checkout
     #     uses: actions/checkout@v4
 
