@@ -1,0 +1,33 @@
+name: Test Docker on GitHub Actions
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: 'Build as described in README.md'
+  push:
+    branches:
+      - 'tudor/feat-docker-action'
+
+jobs:
+  build_from_scratch:
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:dind
+        options: --privileged
+    container:
+      image: ubuntu:22.04
+    steps:
+      - name: Install Docker
+        run: |
+          apt-get update
+          apt-get install -y docker.io
+
+      - name: DinD run
+        run: |
+            docker run -v /var/run/docker.sock:/var/run/docker.sock node:20 bash -c "apt update && apt install -y git wget curl docker.io &&\
+            wget -qO- https://get.pnpm.io/install.sh | ENV=\"$HOME/.bashrc\" SHELL=\"$(which bash)\" bash - && source /$HOME/.bashrc &&\
+            git clone --single-branch --branch tudor/feat-docker-action https://github.com/electric-sql/pglite.git &&\
+            cd pglite &&\
+            pnpm install && pnpm build:all"

@@ -16,7 +16,9 @@ IMG_NAME="electricsql/pglite-builder"
 IMG_TAG="${PG_VERSION}_${SDK_VERSION}"
 SDK_ARCHIVE="${SDK_ARCHIVE:-python3.13-wasm-sdk-Ubuntu-22.04.tar.lz4}"
 WASI_SDK_ARCHIVE="${WASI_SDK_ARCHIVE:-python3.13-wasi-sdk-Ubuntu-22.04.tar.lz4}"
+VOL="${VOL:-$(pwd)/packages/pglite}"
 
+# -v "/$(pwd)/packages/pglite:/workspace/packages/pglite:rw" \
 docker run \
   --rm \
   -e OBJDUMP=${OBJDUMP:-true} \
@@ -28,6 +30,6 @@ docker run \
   -v "/$(pwd)/cibuild:/workspace/cibuild:rw" \
   -v "/$(pwd)/patches:/opt/patches:rw" \
   -v "/$(pwd)/tests:/workspace/tests:rw" \
-  -v "/$(pwd)/packages/pglite:/workspace/packages/pglite:rw" \
+  -v $VOL:/workspace/packages/pglite:rw \
   $IMG_NAME:$IMG_TAG \
-  bash ./cibuild/build-all.sh
+  bash /workspace/cibuild/build-all.sh
