@@ -1,0 +1,64 @@
+name: Test Docker on GitHub Actions
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: 'Build as described in README.md'
+  push:
+    branches:
+      - 'tudor/feat-docker-action'
+
+jobs:
+  build_readme:
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:dind
+        options: --privileged
+        volumes:
+          - shared-volume:/wasm_out
+    container:
+      image: node:20
+      volumes:
+        - shared-volume:/wasm_out
+    steps:
+      - name: Install Docker
+        run: |
+          apt-get update
+          apt-get install -y docker.io
+
+      - name: List wasm output dir
+        run: |
+            ls /wasm_out
+
+      - name: Clear wasm output dir
+        run: |
+            rm -rf /wasm_out/*
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build wasm
+        env:
+          VOL: shared-volume
+        run: |
+          pnpm wasm:build
+
+      - name: List wasm output dir after build
+        run: |
+            ls /wasm_out
+      
+      - name: Move release wasm files to pglite dir
+        run: |
+          mv /wasm_out/release ./packages/pglite/
+
+      - name: Build ts
+        run: |
+          pnpm install 
+          pnpm ts:build
