@@ -78,4 +78,32 @@ describe('dump', () => {
 
     expect(ret1).toEqual(ret2)
   })
+
+  it('dump data dir and load it with username + database', async () => {
+    const pg1 = new PGlite({ options: {database: "postgres", username: "blah"}})
+    await pg1.exec(`
+    CREATE TABLE IF NOT EXISTS test (
+      id SERIAL PRIMARY KEY,
+      name TEXT
+    );
+  `)
+    pg1.exec("INSERT INTO test (name) VALUES ('test');")
+
+    const ret1 = await pg1.query('SELECT * FROM test;')
+
+    const file = await pg1.dumpDataDir()
+
+    expect(typeof file).toBe('object')
+
+    const pg2 = new PGlite({
+      username: "blah",
+      database: "postgres",
+      debug: 0,
+      loadDataDir: file,
+    })
+
+    const ret2 = await pg2.query('SELECT * FROM test;')
+
+    expect(ret1).toEqual(ret2)
+  })
 })
